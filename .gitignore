@@ -1,0 +1,12 @@
+/.vscode
+/Content
+/DerivedDataCache
+/Intermediate
+/Platforms
+/Saved
+/Binaries
+*.png
+camera_pos.txt
+/Images
+/Build
+/Dist
