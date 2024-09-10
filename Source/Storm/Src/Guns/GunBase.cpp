@@ -1,15 +1,23 @@
 #include "GunBase.h"
 #include "DrawDebugHelpers.h"
+#include "Camera/CameraComponent.h"
+#include "Animation/AnimInstance.h"
 
 AGunBase::AGunBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
+
+	ADSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ADSCamera"));
+	ADSCameraComponent->bUsePawnControlRotation = true;
+
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+	ADSCameraComponent->AttachToComponent(Mesh, AttachmentRules, TEXT("ADS"));
 }
 
 void AGunBase::BeginPlay()
@@ -22,12 +30,19 @@ void AGunBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// TODO: only do this if we are ADSing
+    APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+    if (PlayerController)
+    {
+        FRotator NewRotation = PlayerController->GetControlRotation();
+		GetOwner()->SetActorRotation(NewRotation);
+    }
+
 }
 
 void AGunBase::PullTrigger() {
 	// TODO: muzzle flash particles
 	// TODO: gun sound
-	// TODO: fire anim
 
 	FHitResult Hit;
 	FVector ShotDirection; 
@@ -50,27 +65,27 @@ void AGunBase::PullTrigger() {
 }
 
 bool AGunBase::GunTrace(FHitResult& OutHit, FVector& OutShotDirection) {
-	if(Mesh){
-		FTransform MuzzleTransform = Mesh->GetSocketTransform(TEXT("MuzzleFlash"));
-		FVector MuzzleLocation = MuzzleTransform.GetLocation();
-		FVector EndShotLocation = MuzzleLocation + MuzzleTransform.GetRotation().Vector() * FireRange;
-		OutShotDirection = MuzzleTransform.GetRotation().Vector(); // not sure why negative
+	AController* OwnerController = Cast<APawn>(GetOwner())->GetController();
 
-		// DrawDebugSphere(GetWorld(), MuzzleLocation, 5.f, 8, FColor::Red, true, 5.f);
-		DrawDebugLine(GetWorld(), MuzzleLocation, EndShotLocation, FColor::Green, true, 5.f);
+	if(OwnerController == nullptr) return false;
 
-		// ignore the gun and the owner of the gun
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this);
-		Params.AddIgnoredActor(GetOwner());
+	FVector Location;
+	FRotator Rotation;
+	OwnerController->GetPlayerViewPoint(Location, Rotation);
+	OutShotDirection = -Rotation.Vector();
 
-		return GetWorld()->LineTraceSingleByChannel(OutHit, MuzzleLocation, EndShotLocation, ECollisionChannel::ECC_GameTraceChannel1, Params);
-	}
+	FVector End = Location + Rotation.Vector() * FireRange;
 
-	UE_LOG(LogTemp, Error, TEXT("Mesh not assigned!"));
-	return false;
+	DrawDebugLine(GetWorld(), Location, End, FColor::Green, true, 5.f);
+
+	// ignore the gun and the owner of the gun
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(GetOwner());
+
+	return GetWorld()->LineTraceSingleByChannel(OutHit, Location, End, ECollisionChannel::ECC_GameTraceChannel2, Params);
 }
 
-const USkeletalMeshComponent& AGunBase::GetMesh() const {
-	return *Mesh;
+USkeletalMeshComponent* AGunBase::GetMesh() const {
+	return Mesh;
 }

@@ -39,8 +39,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Gun Properties", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* FireAnimation;
 
-	// UPROPERTY(EditAnywhere, Category = "Gun Properties", meta = (AllowPrivateAccess = "true"))
-	// FVector MuzzleOffset;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* ADSCameraComponent;
 
 public:	
 	AGunBase();
@@ -55,5 +55,5 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-	const USkeletalMeshComponent& GetMesh() const;
+	USkeletalMeshComponent* GetMesh() const;
 };

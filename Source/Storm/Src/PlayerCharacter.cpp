@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Guns/GunBase.h"
+#include "SPlayerController.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -15,7 +16,7 @@ APlayerCharacter::APlayerCharacter()
 	FirstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	ArmsMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ArmsMesh"));
-	ArmsMesh ->SetOnlyOwnerSee(true);
+	// ArmsMesh->SetOnlyOwnerSee(true);
 	ArmsMesh->SetupAttachment(FirstPersonCameraComponent);
 	ArmsMesh->bCastDynamicShadow = false;
 	ArmsMesh->CastShadow = false;
@@ -55,16 +56,26 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
+		// locomotion
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Shoot);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		// shooting and aim
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Shoot);
+		EnhancedInputComponent->BindAction(ADSAimAction, ETriggerEvent::Started, this, &APlayerCharacter::StartADSAim);
+		EnhancedInputComponent->BindAction(ADSAimAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopADSAim);
 	}
 }
 
 void APlayerCharacter::Shoot() {
 	if(Gun){
+		if (FireAnimation) {
+			UAnimInstance* AnimInstance = ArmsMesh->GetAnimInstance();
+			if (AnimInstance) {
+				AnimInstance->Montage_Play(FireAnimation, 1.f);
+			}
+		}
 		Gun->PullTrigger();
 	}
 }
@@ -91,9 +102,27 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void APlayerCharacter::StartADSAim() {
+	if(Gun){
+		ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
+		if(PlayerController){
+			PlayerController->SetViewTargetWithBlend(Gun, 0.15f);
+		}
+	}
+}
+
+void APlayerCharacter::StopADSAim() {
+	if(Gun){
+		ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
+		if(PlayerController){
+			PlayerController->SetViewTargetWithBlend(this, 0.15f);
+		}
+	}
+}
+
 FVector APlayerCharacter::GetWeaponSocket() const {
 	if(Gun){
-		return Gun->GetMesh().GetSocketLocation(TEXT("leftHandSocket"));
+		return Gun->GetMesh()->GetSocketLocation(TEXT("leftHandSocket"));
 	}
 	return FVector::ZeroVector;
 }
