@@ -2,6 +2,7 @@
 #include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Animation/AnimInstance.h"
+#include "../HealthComponent.h"
 
 AGunBase::AGunBase()
 {
@@ -55,11 +56,11 @@ void AGunBase::PullTrigger() {
 		
 		if(HitActor){
 			UE_LOG(LogTemp, Warning, TEXT("hit actor with name: %s"), *HitActor->GetActorNameOrLabel());
-			// AWildWestShooterPlayer* HitPlayer = Cast<AWildWestShooterPlayer>(HitActor);
-			// if(HitPlayer){
-			// 	UE_LOG(LogTemp, Warning, TEXT("hit bone with name: %s"), *Hit.BoneName.ToString());
-			// 	HitPlayer->HandlePlayerGotShot(ShotDirection * 5000, Hit.Location, Hit.BoneName);
-			// }
+
+			UHealthComponent* HC = HitActor->FindComponentByClass<UHealthComponent>();
+			if(HC){
+				HC->TakeDamage(Damage);
+			}
 		}
 	}
 }
