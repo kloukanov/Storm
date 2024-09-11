@@ -24,7 +24,9 @@ AGunBase::AGunBase()
 void AGunBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	CurrentMagSize = MaxMagSize;
+	CurrentBulletRounds = MaxBulletRounds;
 }
 
 void AGunBase::Tick(float DeltaTime)
@@ -41,28 +43,51 @@ void AGunBase::Tick(float DeltaTime)
 
 }
 
-void AGunBase::PullTrigger() {
+bool AGunBase::TryReloadGun() {
+	if(CurrentMagSize >= MaxMagSize) {
+		return false; 
+	}
+
+	if(CurrentBulletRounds > 0) {
+		CurrentBulletRounds--;
+		CurrentMagSize = MaxMagSize;
+		return true;
+	}
+	return false;
+}
+
+bool AGunBase::PullTrigger() {
 	// TODO: muzzle flash particles
 	// TODO: gun sound
 
-	FHitResult Hit;
-	FVector ShotDirection; 
+	// check if we have enough bullets in the gun to shoot
+	if(CurrentMagSize > 0) {
+		CurrentMagSize--;
 
-	bool bSuccess = GunTrace(Hit, ShotDirection);
+		FHitResult Hit;
+		FVector ShotDirection; 
 
-	if(bSuccess){
-		DrawDebugPoint(GetWorld(), Hit.Location, 5, FColor::Blue, true);
-		AActor* HitActor = Hit.GetActor();
-		
-		if(HitActor){
-			UE_LOG(LogTemp, Warning, TEXT("hit actor with name: %s"), *HitActor->GetActorNameOrLabel());
+		bool bSuccess = GunTrace(Hit, ShotDirection);
 
-			UHealthComponent* HC = HitActor->FindComponentByClass<UHealthComponent>();
-			if(HC){
-				HC->TakeDamage(Damage);
+		if(bSuccess){
+			DrawDebugPoint(GetWorld(), Hit.Location, 5, FColor::Blue, true);
+			AActor* HitActor = Hit.GetActor();
+			
+			if(HitActor){
+				UE_LOG(LogTemp, Warning, TEXT("hit actor with name: %s"), *HitActor->GetActorNameOrLabel());
+				UHealthComponent* HC = HitActor->FindComponentByClass<UHealthComponent>();
+				if(HC){
+					HC->TakeDamage(Damage);
+				}
 			}
 		}
+	}else {
+		//TODO: play empty shot sound
+		return false;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("NUMBER OF BULLETS: %d / %d | %d / %d"), CurrentMagSize, MaxMagSize, CurrentBulletRounds, MaxBulletRounds);
+	return true;
 }
 
 bool AGunBase::GunTrace(FHitResult& OutHit, FVector& OutShotDirection) {

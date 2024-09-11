@@ -26,6 +26,8 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AnimInstance = ArmsMesh->GetAnimInstance();
 	
 	
 	PickUpGun();
@@ -65,18 +67,17 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Shoot);
 		EnhancedInputComponent->BindAction(ADSAimAction, ETriggerEvent::Started, this, &APlayerCharacter::StartADSAim);
 		EnhancedInputComponent->BindAction(ADSAimAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopADSAim);
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Reload);
 	}
 }
 
 void APlayerCharacter::Shoot() {
-	if(Gun){
-		if (FireAnimation) {
-			UAnimInstance* AnimInstance = ArmsMesh->GetAnimInstance();
-			if (AnimInstance) {
+	if(Gun && FireAnimation){
+		if(Gun->PullTrigger()){
+			if (AnimInstance && AnimInstance->IsAnyMontagePlaying() == false) {
 				AnimInstance->Montage_Play(FireAnimation, 1.f);
 			}
 		}
-		Gun->PullTrigger();
 	}
 }
 
@@ -104,18 +105,42 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 void APlayerCharacter::StartADSAim() {
 	if(Gun){
-		ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
-		if(PlayerController){
-			PlayerController->SetViewTargetWithBlend(Gun, 0.15f);
+		// if we are not playing any anims
+		if (AnimInstance && AnimInstance->IsAnyMontagePlaying() == false) {
+			ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
+			if(PlayerController){
+				PlayerController->SetViewTargetWithBlend(Gun, 0.15f);
+			}
 		}
 	}
 }
 
 void APlayerCharacter::StopADSAim() {
 	if(Gun){
-		ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
-		if(PlayerController){
-			PlayerController->SetViewTargetWithBlend(this, 0.15f);
+		// if we are not playing any anims
+		if (AnimInstance && AnimInstance->IsAnyMontagePlaying() == false) {
+			ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
+			if(PlayerController){
+				PlayerController->SetViewTargetWithBlend(this, 0.15f);
+			}
+		}
+	}
+}
+
+void APlayerCharacter::Reload() {
+	if(Gun && ReloadAnimation){
+		if (AnimInstance && AnimInstance->IsAnyMontagePlaying() == false) {
+			// first change to FPS camera in case we are ADSing
+			ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
+			if(PlayerController){
+				PlayerController->SetViewTargetWithBlend(this, 0.15f);
+			}
+
+			if(Gun->TryReloadGun()){
+				AnimInstance->Montage_Play(ReloadAnimation, 1.f);
+			}else {
+				// TODO: failed to reload, show some sort of indication 
+			}
 		}
 	}
 }

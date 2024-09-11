@@ -34,6 +34,11 @@ private:
 	int CurrentMagSize;
 
 	UPROPERTY(EditAnywhere, Category = "Gun Properties", meta = (AllowPrivateAccess = "true"))
+	int MaxBulletRounds;
+
+	int CurrentBulletRounds;
+
+	UPROPERTY(EditAnywhere, Category = "Gun Properties", meta = (AllowPrivateAccess = "true"))
 	USoundBase* FireSound;
 	
 	UPROPERTY(EditAnywhere, Category = "Gun Properties", meta = (AllowPrivateAccess = "true"))
@@ -45,7 +50,9 @@ private:
 public:	
 	AGunBase();
 
-	void PullTrigger();
+	bool PullTrigger();
+
+	bool TryReloadGun();
 
 protected:
 	virtual void BeginPlay() override;

@@ -28,16 +28,24 @@ class STORM_API APlayerCharacter : public ACharacter
 	class UInputAction* ShootAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* ReloadAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* ADSAimAction;
 
 	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* FireAnimation;
+
+	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ReloadAnimation;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AGunBase> GunClass;
 
 	UPROPERTY()
 	class AGunBase* Gun;
+
+	class UAnimInstance* AnimInstance;
 
 public:
 
@@ -54,6 +62,8 @@ protected:
 	void PickUpGun();
 
 	void Shoot();
+
+	void Reload();
 
 	void StartADSAim();
 
