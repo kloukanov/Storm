@@ -19,7 +19,14 @@ private:
 	class UUserWidget* HUDWidget;
 	// ----------------------------------------------
 
+	int CurrentNumberOfEnemies = 0;
+
+	TArray<class AEnemyBase*> Enemies;
+
 public:
+
+	UPROPERTY(EditAnywhere)
+	int MaxNumberOfEntities = 25;
 
 	void ActorDied(AActor* DeadActor);
 
@@ -30,6 +37,12 @@ public:
 	UFUNCTION(Blueprintcallable)
 	void HideWidget(UUserWidget* WidgetToHide, TSubclassOf<UUserWidget> WidgetClass);
 	// ----------------------------------------------
+
+	int GetCurrentNumberOfEnemies() const { return CurrentNumberOfEnemies; }
+
+	TArray<class AEnemyBase*> GetEnemies() const { return Enemies; }
+
+	void AddToEnemies(AEnemyBase* Enemy);
 
 protected:
 

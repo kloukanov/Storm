@@ -11,6 +11,10 @@ void ASGameMode::ActorDied(AActor* DeadActor) {
     UE_LOG(LogTemp, Warning, TEXT("this actor died: %s"), *DeadActor->GetActorNameOrLabel());
 }
 
+void ASGameMode::AddToEnemies(AEnemyBase* Enemy) {
+    Enemies.Add(Enemy);
+}
+
 void ASGameMode::ShowWidget(UUserWidget* WidgetToShow, TSubclassOf<UUserWidget> WidgetClass) {
     if(!WidgetToShow) {
         WidgetToShow = CreateWidget(GetWorld(), WidgetClass);
