@@ -1,5 +1,6 @@
 #include "SGameMode.h"
 #include "Blueprint/UserWidget.h"
+#include "Enemy/EnemyBase.h"
 
 void ASGameMode::BeginPlay() {
     Super::BeginPlay();
@@ -9,10 +10,24 @@ void ASGameMode::BeginPlay() {
 
 void ASGameMode::ActorDied(AActor* DeadActor) {
     UE_LOG(LogTemp, Warning, TEXT("this actor died: %s"), *DeadActor->GetActorNameOrLabel());
+    AEnemyBase* DeadEnemy = Cast<AEnemyBase>(DeadActor);
+    if(DeadEnemy){
+        DeadEnemy->ToggleIsDead(true);
+    }
 }
 
 void ASGameMode::AddToEnemies(AEnemyBase* Enemy) {
     Enemies.Add(Enemy);
+}
+
+AEnemyBase* ASGameMode::GetADeadEnemy() const {
+    for(AEnemyBase* Enemy : Enemies){
+        if(Enemy->GetIsDead() == true){
+            return Enemy;
+        }
+    }
+
+    return nullptr;
 }
 
 void ASGameMode::ShowWidget(UUserWidget* WidgetToShow, TSubclassOf<UUserWidget> WidgetClass) {

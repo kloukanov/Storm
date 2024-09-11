@@ -26,11 +26,20 @@ void ASpawner::Tick(float DeltaTime)
 }
 
 void ASpawner::SpawnEnemy() {
-
-	// TODO: use a pool of enemies
-	// basically mark enemies as dead and later unmark them and reset their locations
-	if(GameMode->GetCurrentNumberOfEnemies() >= GameMode->MaxNumberOfEntities){
+	if(GameMode->GetCurrentNumberOfSpawnedEnemies() >= GameMode->MaxNumberOfEntities){
 		UE_LOG(LogTemp, Warning, TEXT("maximum number of enemies already spawned"));
+
+		// look if we can reuse a dead enemy
+		AEnemyBase* Enemy = GameMode->GetADeadEnemy();
+		if(Enemy) {
+			// reusing dead enemies and making them alive again lol
+			Enemy->ToggleIsDead(false);
+			Enemy->SetActorLocation(GetActorLocation());
+			Enemy->SetActorRotation(GetActorRotation());
+			UE_LOG(LogTemp, Warning, TEXT("spawned a reused enemy!"));
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("didn't spawn a reused enemy"));
 		return;
 	}
 

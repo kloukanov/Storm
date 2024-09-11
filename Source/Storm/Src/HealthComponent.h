@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActorDamaged);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STORM_API UHealthComponent : public UActorComponent
@@ -29,4 +30,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void TakeDamage(float DamageValue);
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnActorDamaged OnActorDamaged;
+
+	void ResetHealth();
 };

@@ -11,11 +11,10 @@ class STORM_API AEnemyBase : public ACharacter
 
 private:
 
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Mesh, meta = (AllowPrivateAccess = "true"))
-	// USkeletalMeshComponent* EnemyMesh;
-
 	UPROPERTY(VisibleAnywhere)
 	class UHealthComponent* HealthComponent;
+
+	bool bIsDead;
 
 public:
 	AEnemyBase();
@@ -28,4 +27,10 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(Blueprintcallable)
+	void HandleTakeDamage();
+
+	bool GetIsDead() const { return bIsDead; }
+
+	void ToggleIsDead(bool IsDead);
 };

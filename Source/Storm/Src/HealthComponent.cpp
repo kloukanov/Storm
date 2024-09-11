@@ -21,6 +21,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UHealthComponent::TakeDamage(float DamageValue) {
 	Health -= DamageValue;
+	OnActorDamaged.Broadcast();
 
 	if(Health <= 0.f) {
 		ASGameMode* SGameMode = Cast<ASGameMode>(UGameplayStatics::GetGameMode(this));
@@ -28,4 +29,8 @@ void UHealthComponent::TakeDamage(float DamageValue) {
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("health = %f"), Health);
+}
+
+void UHealthComponent::ResetHealth() {
+	Health = MaxHealth;
 }

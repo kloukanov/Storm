@@ -19,8 +19,6 @@ private:
 	class UUserWidget* HUDWidget;
 	// ----------------------------------------------
 
-	int CurrentNumberOfEnemies = 0;
-
 	TArray<class AEnemyBase*> Enemies;
 
 public:
@@ -38,7 +36,9 @@ public:
 	void HideWidget(UUserWidget* WidgetToHide, TSubclassOf<UUserWidget> WidgetClass);
 	// ----------------------------------------------
 
-	int GetCurrentNumberOfEnemies() const { return CurrentNumberOfEnemies; }
+	int GetCurrentNumberOfSpawnedEnemies() const { return Enemies.Num(); }
+
+	class AEnemyBase* GetADeadEnemy() const;
 
 	TArray<class AEnemyBase*> GetEnemies() const { return Enemies; }
 
