@@ -116,12 +116,11 @@ void APlayerCharacter::StartADSAim() {
 }
 
 void APlayerCharacter::StopADSAim() {
-	if(Gun){
-		// if we are not playing any anims
-			ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
-			if(PlayerController){
-				PlayerController->SetViewTargetWithBlend(this, 0.15f);
-			}
+	if(Gun) {
+		ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
+		if(PlayerController){
+			PlayerController->SetViewTargetWithBlend(this, 0.15f);
+		}
 	}
 }
 
