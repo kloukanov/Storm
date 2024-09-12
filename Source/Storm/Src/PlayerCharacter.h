@@ -47,6 +47,10 @@ class STORM_API APlayerCharacter : public ACharacter
 
 	class UAnimInstance* AnimInstance;
 
+	FTimerHandle FireTimerHandle;
+
+	bool bIsFiring = false; 
+
 public:
 
 	APlayerCharacter();
@@ -62,6 +66,10 @@ protected:
 	void PickUpGun();
 
 	void Shoot();
+
+	void StopShoot();
+
+	void Fire();
 
 	void Reload();
 

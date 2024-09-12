@@ -15,7 +15,6 @@ AGunBase::AGunBase()
 	Mesh->SetupAttachment(Root);
 
 	ADSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ADSCamera"));
-	ADSCameraComponent->bUsePawnControlRotation = true;
 
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	ADSCameraComponent->AttachToComponent(Mesh, AttachmentRules, TEXT("ADS"));

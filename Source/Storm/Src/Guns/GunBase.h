@@ -23,7 +23,7 @@ private:
 	float Damage;
 
 	UPROPERTY(EditAnywhere, Category = "Gun Properties", meta = (AllowPrivateAccess = "true"))
-	bool IsAutomatic = false;
+	bool bIsAutomatic = false;
 
 	UPROPERTY(EditAnywhere, Category = "Gun Properties", meta = (AllowPrivateAccess = "true"))
 	float FireSpeed;
@@ -53,6 +53,10 @@ public:
 	bool PullTrigger();
 
 	bool TryReloadGun();
+
+	bool GetIsAutomatic() const { return bIsAutomatic; }
+
+	float GetFireSpeed() const { return FireSpeed; }
 
 protected:
 	virtual void BeginPlay() override;

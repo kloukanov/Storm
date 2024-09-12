@@ -64,7 +64,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		// shooting and aim
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Shoot);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &APlayerCharacter::Shoot);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopShoot);
+
 		EnhancedInputComponent->BindAction(ADSAimAction, ETriggerEvent::Started, this, &APlayerCharacter::StartADSAim);
 		EnhancedInputComponent->BindAction(ADSAimAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopADSAim);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Reload);
@@ -72,11 +74,26 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 }
 
 void APlayerCharacter::Shoot() {
-	if(Gun && FireAnimation){
+	if(Gun && FireAnimation && !bIsFiring){
+		bIsFiring = true;
+		Fire();
+		if(Gun->GetIsAutomatic()) {
+			GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &APlayerCharacter::Fire, Gun->GetFireSpeed(), true);
+		}
+	}
+}
+
+void APlayerCharacter::StopShoot() {
+	if (bIsFiring) {
+		bIsFiring = false;
+		GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
+	}
+}
+
+void APlayerCharacter::Fire() {
+	if(AnimInstance && AnimInstance->GetCurrentActiveMontage() != ReloadAnimation){
 		if(Gun->PullTrigger()){
-			if (AnimInstance && AnimInstance->IsAnyMontagePlaying() == false) {
-				AnimInstance->Montage_Play(FireAnimation, 1.f);
-			}
+			AnimInstance->Montage_Play(FireAnimation, 1.f);		
 		}
 	}
 }
@@ -105,8 +122,8 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 void APlayerCharacter::StartADSAim() {
 	if(Gun){
-		// if we are not playing any anims
-		if (AnimInstance && AnimInstance->IsAnyMontagePlaying() == false) {
+		// if we are not playing reload anim
+		if (AnimInstance && AnimInstance->GetCurrentActiveMontage() != ReloadAnimation) {
 			ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
 			if(PlayerController){
 				PlayerController->SetViewTargetWithBlend(Gun, 0.15f);
@@ -126,7 +143,7 @@ void APlayerCharacter::StopADSAim() {
 
 void APlayerCharacter::Reload() {
 	if(Gun && ReloadAnimation){
-		if (AnimInstance && AnimInstance->IsAnyMontagePlaying() == false) {
+		if (AnimInstance) {
 			// first change to FPS camera in case we are ADSing
 			ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
 			if(PlayerController){
