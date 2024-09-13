@@ -3,11 +3,16 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../HealthComponent.h"
 #include "../AI/EnemyAIController.h"
+#include "../Pickups/PickupBase.h"
 
 AEnemyBase::AEnemyBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+
+	PickupSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Spawn Point"));
+	PickupSpawnPoint->SetupAttachment(RootComponent);
+
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
@@ -28,22 +33,37 @@ void AEnemyBase::Tick(float DeltaTime)
 
 }
 
+void AEnemyBase::SpawnPickup() {
+
+	int Probability = FMath::RandRange(0, SpawnPickupProbability);
+
+	if(Probability == 0) {
+		FVector SpawnLocation = PickupSpawnPoint->GetComponentLocation();
+
+		if(PickupClasses.Num() > 0){
+			int Index = FMath::RandRange(0, PickupClasses.Num() - 1);
+			GetWorld()->SpawnActor<APickupBase>(PickupClasses[Index], SpawnLocation, FRotator::ZeroRotator);
+		}
+	}
+}
+
 void AEnemyBase::HandleTakeDamage() {
 	//TODO: play damaged animation
 	UE_LOG(LogTemp, Warning, TEXT("this actor is taking damage: %s"), *this->GetActorNameOrLabel());
 }
 
 void AEnemyBase::ToggleIsDead(bool IsDead) {
-	bIsDead = IsDead;
-
-	SetActorHiddenInGame(bIsDead);
-	SetActorEnableCollision(!bIsDead);
-
-	if(bIsDead == false) {
+	if(IsDead) {
+		bIsDead = true;
+		SpawnPickup();
+		SetActorHiddenInGame(true);
+		SetActorEnableCollision(false);
+	}else {
+		bIsDead = false;
 		HealthComponent->ResetHealth();
+		SetActorHiddenInGame(false);
+		SetActorEnableCollision(true);
 	}
-
-
 	/* 
 
 	// possible optimization for later

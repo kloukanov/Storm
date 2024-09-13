@@ -25,11 +25,22 @@ private:
 
 	bool bIsDead;
 
+	UPROPERTY(EditAnywhere, Category = "Enemy Properties", meta = (AllowPrivateAccess = "true"))
+	int SpawnPickupProbability = 1;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy Properties", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* PickupSpawnPoint;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy Properties", meta = (AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<class APickupBase>> PickupClasses;
+
 public:
 	AEnemyBase();
 
 protected:
 	virtual void BeginPlay() override;
+
+	void SpawnPickup();
 
 public:	
 	virtual void Tick(float DeltaTime) override;

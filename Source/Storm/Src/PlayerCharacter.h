@@ -91,4 +91,7 @@ public:
 
 	UFUNCTION(Blueprintcallable)
 	void HandleTakeDamage();
+
+	UFUNCTION(Blueprintcallable)
+	void AddBulletRoundToGuns();
 };

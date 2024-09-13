@@ -165,6 +165,13 @@ void APlayerCharacter::Reload() {
 	}
 }
 
+void APlayerCharacter::AddBulletRoundToGuns() {
+	// TODO:: add the round for all guns
+	if(Gun){
+		Gun->AddBulletRound();
+	}
+}
+
 void APlayerCharacter::HandleTakeDamage() {
 	//TODO: play damaged animation
 	UE_LOG(LogTemp, Warning, TEXT("this actor is taking damage: %s"), *this->GetActorNameOrLabel());

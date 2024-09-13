@@ -58,6 +58,8 @@ public:
 
 	float GetFireSpeed() const { return FireSpeed; }
 
+	void AddBulletRound();
+
 protected:
 	virtual void BeginPlay() override;
 

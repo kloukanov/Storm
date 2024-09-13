@@ -111,6 +111,15 @@ bool AGunBase::GunTrace(FHitResult& OutHit, FVector& OutShotDirection) {
 	return GetWorld()->LineTraceSingleByChannel(OutHit, Location, End, ECollisionChannel::ECC_GameTraceChannel2, Params);
 }
 
+void AGunBase::AddBulletRound() {
+	// going to be generous and top off the bullets in current mag
+	CurrentMagSize = MaxMagSize;
+	if(CurrentBulletRounds < MaxBulletRounds) {
+		CurrentBulletRounds++;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("NUMBER OF BULLETS: %d / %d | %d / %d"), CurrentMagSize, MaxMagSize, CurrentBulletRounds, MaxBulletRounds);
+}
+
 USkeletalMeshComponent* AGunBase::GetMesh() const {
 	return Mesh;
 }
