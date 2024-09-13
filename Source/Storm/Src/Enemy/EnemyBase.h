@@ -14,6 +14,15 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UHealthComponent* HealthComponent;
 
+	UPROPERTY(EditAnywhere, Category = "Enemy Properties", meta = (AllowPrivateAccess = "true"))
+	float Speed;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy Properties", meta = (AllowPrivateAccess = "true"))
+	float DamageAmount;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy Properties", meta = (AllowPrivateAccess = "true"))
+	float AttackRate;
+
 	bool bIsDead;
 
 public:
@@ -27,10 +36,16 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void Attack() {};
+
 	UFUNCTION(Blueprintcallable)
 	void HandleTakeDamage();
 
-	bool GetIsDead() const { return bIsDead; }
+	bool GetIsDead() const;
+
+	float GetDamageAmount() const;
+
+	float GetAttackRate() const;
 
 	void ToggleIsDead(bool IsDead);
 };

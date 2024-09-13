@@ -6,6 +6,7 @@
 #include "InputActionValue.h"
 #include "Guns/GunBase.h"
 #include "SPlayerController.h"
+#include "HealthComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -21,6 +22,8 @@ APlayerCharacter::APlayerCharacter()
 	ArmsMesh->bCastDynamicShadow = false;
 	ArmsMesh->CastShadow = false;
 	ArmsMesh->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
 void APlayerCharacter::BeginPlay()
@@ -28,7 +31,10 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	AnimInstance = ArmsMesh->GetAnimInstance();
-	
+
+	if(HealthComponent){
+		HealthComponent->OnActorDamaged.AddDynamic(this, &APlayerCharacter::HandleTakeDamage);
+	}
 	
 	PickUpGun();
 }
@@ -157,6 +163,11 @@ void APlayerCharacter::Reload() {
 			}
 		}
 	}
+}
+
+void APlayerCharacter::HandleTakeDamage() {
+	//TODO: play damaged animation
+	UE_LOG(LogTemp, Warning, TEXT("this actor is taking damage: %s"), *this->GetActorNameOrLabel());
 }
 
 FVector APlayerCharacter::GetWeaponSocket() const {

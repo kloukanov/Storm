@@ -9,6 +9,9 @@ class STORM_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere)
+	class UHealthComponent* HealthComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Mesh, meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* ArmsMesh;
 
@@ -86,4 +89,6 @@ public:
 	UFUNCTION(Blueprintcallable)
 	FVector GetWeaponSocket() const;
 
+	UFUNCTION(Blueprintcallable)
+	void HandleTakeDamage();
 };

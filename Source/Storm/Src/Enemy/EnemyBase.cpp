@@ -1,5 +1,6 @@
 #include "EnemyBase.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "../HealthComponent.h"
 #include "../AI/EnemyAIController.h"
 
@@ -13,6 +14,8 @@ AEnemyBase::AEnemyBase()
 void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
 
 	if(HealthComponent){
 		HealthComponent->OnActorDamaged.AddDynamic(this, &AEnemyBase::HandleTakeDamage);
@@ -59,6 +62,12 @@ void AEnemyBase::ToggleIsDead(bool IsDead) {
 	}
 	*/
 }
+
+bool AEnemyBase::GetIsDead() const { return bIsDead; }
+
+float AEnemyBase::GetDamageAmount() const { return DamageAmount; }
+
+float AEnemyBase::GetAttackRate() const { return AttackRate; }
 
 void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
