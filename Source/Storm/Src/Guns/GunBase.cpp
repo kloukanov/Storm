@@ -32,7 +32,7 @@ void AGunBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// TODO: only do this if we are ADSing
+	// TODO: only do this if we are ADSing -> will fix bug where character is slow when looking straight up or straight down
     APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
     if (PlayerController)
     {
