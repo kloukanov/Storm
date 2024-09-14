@@ -36,14 +36,23 @@ class STORM_API APlayerCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* ADSAimAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SwapToPrimaryGunAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SwapToSecondaryGunAction;
+
 	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* FireAnimation;
 
 	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ReloadAnimation;
 
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class AGunBase> GunClass;
+	UPROPERTY(EditDefaultsOnly, Category = Gun)
+	TArray<TSubclassOf<class AGunBase>> GunClasses;
+
+	UPROPERTY(EditAnywhere, Category = Gun, meta = (AllowPrivateAccess = "true"))
+	TArray<class AGunBase*> Guns;
 
 	UPROPERTY()
 	class AGunBase* Gun;
@@ -66,7 +75,7 @@ protected:
 
 	void Look(const struct FInputActionValue& Value);
 
-	void PickUpGun();
+	void InitGuns();
 
 	void Shoot();
 
@@ -79,6 +88,16 @@ protected:
 	void StartADSAim();
 
 	void StopADSAim();
+
+	class AGunBase* MakeGunAndSetActive(bool bSetActive, int GunIndex);
+
+	void SwapToPrimaryGun();
+
+	void SwapToSecondaryGun();
+
+	void SwapGun(int Index);
+
+	void ToggleGunActive(bool bIsActive);
 
 public:	
 

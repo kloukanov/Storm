@@ -36,7 +36,7 @@ void APlayerCharacter::BeginPlay()
 		HealthComponent->OnActorDamaged.AddDynamic(this, &APlayerCharacter::HandleTakeDamage);
 	}
 	
-	PickUpGun();
+	InitGuns();
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -45,17 +45,42 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 }
 
-void APlayerCharacter::PickUpGun() {
+void APlayerCharacter::InitGuns() {
 
 	if(Gun){
 		// we already have a gun
 		return;
 	}
 
-	Gun = GetWorld()->SpawnActor<AGunBase>(GunClass);
+	// add primary gun to gun inventory array
+	Guns.Add(MakeGunAndSetActive(true, 0));
+
+	// secondary gun
+	Guns.Add(MakeGunAndSetActive(false, 1));
+}
+
+// TODO: a little unsafe asking for index of gun class array
+AGunBase* APlayerCharacter::MakeGunAndSetActive(bool bSetActive, int GunIndex) {
+
+	// check if safe
+	if(GunIndex > GunClasses.Num() - 1){
+		UE_LOG(LogTemp, Warning, TEXT("gun index passed in is not valid, GunIndex: %d, GunClasses length: %d"), GunIndex, (GunClasses.Num() - 1));
+		return nullptr;
+	}
+
+	AGunBase* AGun = GetWorld()->SpawnActor<AGunBase>(GunClasses[GunIndex]);
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-	Gun->AttachToComponent(ArmsMesh, AttachmentRules, TEXT("GripPoint"));
-	Gun->SetOwner(this);
+	AGun->AttachToComponent(ArmsMesh, AttachmentRules, TEXT("GripPoint"));
+	AGun->SetOwner(this);
+
+	if(bSetActive ==  true) {
+		Gun = AGun;
+	}else {
+		AGun->SetActorHiddenInGame(true);
+		AGun->SetActorEnableCollision(false);
+	}
+
+	return AGun;
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -76,6 +101,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(ADSAimAction, ETriggerEvent::Started, this, &APlayerCharacter::StartADSAim);
 		EnhancedInputComponent->BindAction(ADSAimAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopADSAim);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Reload);
+		
+		EnhancedInputComponent->BindAction(SwapToPrimaryGunAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SwapToPrimaryGun);
+		EnhancedInputComponent->BindAction(SwapToSecondaryGunAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SwapToSecondaryGun);
 	}
 }
 
@@ -165,10 +193,44 @@ void APlayerCharacter::Reload() {
 	}
 }
 
+void APlayerCharacter::SwapGun(int Index) {
+	if(Guns.Num() == 2) {
+		if(Gun && Guns[Index] != nullptr && Guns[Index]->IsHidden() == true){
+			// make current gun hidden
+			ToggleGunActive(false);
+			if(AnimInstance){
+				StopShoot();
+				StopADSAim();
+				AnimInstance->Montage_Play(ReloadAnimation, 5.f);
+				Gun = Guns[Index];
+				ToggleGunActive(true);
+			}
+		}
+	}else {
+		UE_LOG(LogTemp, Warning, TEXT("Guns inventory is not 2"));
+	}
+}
+
+void APlayerCharacter::SwapToPrimaryGun() {
+	SwapGun(0);
+}
+
+void APlayerCharacter::SwapToSecondaryGun() {
+	SwapGun(1);
+}
+
 void APlayerCharacter::AddBulletRoundToGuns() {
 	// TODO:: add the round for all guns
 	if(Gun){
 		Gun->AddBulletRound();
+	}
+}
+
+// probably move to Gun class
+void APlayerCharacter::ToggleGunActive(bool bIsActive) {
+	if(Gun){
+		Gun->SetActorHiddenInGame(!bIsActive);
+		Gun->SetActorEnableCollision(bIsActive);
 	}
 }
 
