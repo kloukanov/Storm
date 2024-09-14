@@ -60,6 +60,12 @@ public:
 
 	void AddBulletRound();
 
+	int GetCurrentMagSize() const { return CurrentMagSize; }
+
+	int GetCurrentBulletRounds() const { return CurrentBulletRounds; }
+
+	int GetMaxBulletRounds() const { return MaxBulletRounds; }
+
 protected:
 	virtual void BeginPlay() override;
 

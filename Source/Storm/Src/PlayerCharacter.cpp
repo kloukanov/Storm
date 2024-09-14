@@ -226,6 +226,22 @@ void APlayerCharacter::AddBulletRoundToGuns() {
 	}
 }
 
+
+FString APlayerCharacter::GetBulletInMagCount() const {
+	if(Gun){
+		return FString::FromInt(Gun->GetCurrentMagSize());
+	}
+	return "";
+}
+
+
+FString APlayerCharacter::GetBulletRoundsCount() const {
+	if(Gun){
+		return FString::FromInt(Gun->GetCurrentBulletRounds()) + "/" + FString::FromInt(Gun->GetMaxBulletRounds());
+	}
+	return "";
+}
+
 // probably move to Gun class
 void APlayerCharacter::ToggleGunActive(bool bIsActive) {
 	if(Gun){

@@ -116,4 +116,10 @@ public:
 
 	UFUNCTION(Blueprintcallable)
 	float GetHealthPercent() const;
+
+	UFUNCTION(Blueprintcallable)
+	FString GetBulletInMagCount() const;
+
+	UFUNCTION(Blueprintcallable)
+	FString GetBulletRoundsCount() const;
 };
