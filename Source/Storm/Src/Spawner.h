@@ -11,7 +11,14 @@ class STORM_API ASpawner : public AActor
 
 private:
 
-	UStaticMeshComponent* Mesh;
+	UPROPERTY(VisibleAnywhere)
+	class UHealthComponent* HealthComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* BoxComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<class AEnemyBase>> EnemyClasses;
@@ -22,6 +29,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float SpawnRate = 2.f;
+
+	UPROPERTY(EditAnywhere, Category = "Spawner Properties", meta = (AllowPrivateAccess = "true"))
+	bool bIsActive;
 	
 public:	
 	ASpawner();
@@ -31,6 +41,15 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+
+	void SetIsActive(bool IsActive);
+
+	bool GetIsActive() const { return bIsActive; }
+
+	void HandleDestruction();
+
+	UFUNCTION(Blueprintcallable)
+	void HandleTakeDamage();
 
 private:
 

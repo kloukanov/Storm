@@ -1,6 +1,7 @@
 #include "SGameMode.h"
 #include "Blueprint/UserWidget.h"
 #include "Enemy/EnemyBase.h"
+#include "Spawner.h"
 
 void ASGameMode::BeginPlay() {
     Super::BeginPlay();
@@ -10,9 +11,17 @@ void ASGameMode::BeginPlay() {
 
 void ASGameMode::ActorDied(AActor* DeadActor) {
     UE_LOG(LogTemp, Warning, TEXT("this actor died: %s"), *DeadActor->GetActorNameOrLabel());
+    
     AEnemyBase* DeadEnemy = Cast<AEnemyBase>(DeadActor);
     if(DeadEnemy){
         DeadEnemy->ToggleIsDead(true);
+        return;
+    }
+
+    ASpawner* Spawner = Cast<ASpawner>(DeadActor);
+    if(Spawner) {
+        Spawner->HandleDestruction();
+        return;
     }
 }
 
