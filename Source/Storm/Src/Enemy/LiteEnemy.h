@@ -22,4 +22,6 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 	
+	UFUNCTION(Blueprintcallable)
+	virtual void HandleTakeDamage() override;
 };

@@ -13,6 +13,8 @@ void ALiteEnemy::Tick(float DeltaTime) {
 }
 
 void ALiteEnemy::Attack() {
+    Super::Attack();
+
     UE_LOG(LogTemp, Warning, TEXT("Enemy is attacking"));
     
     FCollisionShape VisibilitySphere = FCollisionShape::MakeSphere(400.f);
@@ -29,5 +31,8 @@ void ALiteEnemy::Attack() {
             }
         }
     }
+}
 
+void ALiteEnemy::HandleTakeDamage() {
+    Super::HandleTakeDamage();
 }

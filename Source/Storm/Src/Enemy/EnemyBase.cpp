@@ -25,12 +25,20 @@ void AEnemyBase::BeginPlay()
 	if(HealthComponent){
 		HealthComponent->OnActorDamaged.AddDynamic(this, &AEnemyBase::HandleTakeDamage);
 	}
+
+	AnimInstance = GetMesh()->GetAnimInstance();
 }
 
 void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AEnemyBase::Attack() {
+	if(AnimInstance && AttackAnimation){
+		AnimInstance->Montage_Play(AttackAnimation, 1.f);
+	}
 }
 
 void AEnemyBase::SpawnPickup() {
@@ -48,8 +56,10 @@ void AEnemyBase::SpawnPickup() {
 }
 
 void AEnemyBase::HandleTakeDamage() {
-	//TODO: play damaged animation
 	UE_LOG(LogTemp, Warning, TEXT("this actor is taking damage: %s"), *this->GetActorNameOrLabel());
+	if(AnimInstance && GetHitAnimation) {
+		AnimInstance->Montage_Play(GetHitAnimation, 1.f);
+	}
 }
 
 void AEnemyBase::ToggleIsDead(bool IsDead) {

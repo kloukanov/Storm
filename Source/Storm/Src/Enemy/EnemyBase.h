@@ -34,6 +34,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Enemy Properties", meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<class APickupBase>> PickupClasses;
 
+	class UAnimInstance* AnimInstance;
+
+	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* AttackAnimation;
+
+	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* GetHitAnimation;
+
 public:
 	AEnemyBase();
 
@@ -47,10 +55,9 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	virtual void Attack() {};
+	virtual void Attack();
 
-	UFUNCTION(Blueprintcallable)
-	void HandleTakeDamage();
+	virtual void HandleTakeDamage();
 
 	bool GetIsDead() const;
 
