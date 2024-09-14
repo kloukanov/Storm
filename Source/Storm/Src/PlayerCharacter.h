@@ -113,4 +113,7 @@ public:
 
 	UFUNCTION(Blueprintcallable)
 	void AddBulletRoundToGuns();
+
+	UFUNCTION(Blueprintcallable)
+	float GetHealthPercent() const;
 };

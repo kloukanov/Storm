@@ -239,6 +239,10 @@ void APlayerCharacter::HandleTakeDamage() {
 	UE_LOG(LogTemp, Warning, TEXT("this actor is taking damage: %s"), *this->GetActorNameOrLabel());
 }
 
+float APlayerCharacter::GetHealthPercent() const {
+	return HealthComponent->GetHealthPercent();
+}
+
 FVector APlayerCharacter::GetWeaponSocket() const {
 	if(Gun){
 		return Gun->GetMesh()->GetSocketLocation(TEXT("leftHandSocket"));

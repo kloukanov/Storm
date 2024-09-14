@@ -35,4 +35,6 @@ public:
 	FOnActorDamaged OnActorDamaged;
 
 	void ResetHealth();
+
+	float GetHealthPercent() const;
 };

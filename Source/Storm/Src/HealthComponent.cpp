@@ -34,3 +34,7 @@ void UHealthComponent::TakeDamage(float DamageValue) {
 void UHealthComponent::ResetHealth() {
 	Health = MaxHealth;
 }
+
+float UHealthComponent::GetHealthPercent() const {
+	return Health / MaxHealth;
+}
