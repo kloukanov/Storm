@@ -66,6 +66,8 @@ class STORM_API APlayerCharacter : public ACharacter
 
 	bool bIsFiring = false; 
 
+	bool bPrimaryWeaponEquipped = true;
+
 public:
 
 	APlayerCharacter();
@@ -117,6 +119,9 @@ public:
 	void HandleTakeDamage();
 
 	UFUNCTION(Blueprintcallable)
+	void HandlePlayerDied();
+
+	UFUNCTION(Blueprintcallable)
 	void AddBulletRoundToGuns();
 
 	UFUNCTION(Blueprintcallable)
@@ -127,4 +132,7 @@ public:
 
 	UFUNCTION(Blueprintcallable)
 	FString GetBulletRoundsCount() const;
+
+	UFUNCTION(Blueprintcallable)
+	bool GetIsPrimaryWeaponEquipped() const { return bPrimaryWeaponEquipped; }
 };

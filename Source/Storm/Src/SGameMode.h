@@ -44,12 +44,26 @@ private:
 	UPROPERTY()
 	class UUserWidget* PauseWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Screens", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UUserWidget> GameOverScreen;
+
+	UPROPERTY()
+	class UUserWidget* GameOverWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Screens", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UUserWidget> EndGameScreen;
+
+	UPROPERTY()
+	class UUserWidget* EndGameWidget;
+
 	UPROPERTY()
 	class UUserWidget* CurrentWidget;
 
 	void HideAllActiveWidgets();
 
 	void ToggleGameplay(bool bIsGameplayMode);
+
+	void SetCurrentWidgetToWidget(class UUserWidget* Widget);
 
 	APlayerController* PlayerController;
 
@@ -59,10 +73,17 @@ private:
 
 	TArray<class AEnemyBase*> Enemies;
 
+	int NumberOfKilledEnemies = 0;
+
+	int CurrentNumberOfDestroyedSpawners = 0;
+
 public:
 
 	UPROPERTY(EditAnywhere)
 	int MaxNumberOfEntities = 25;
+
+	UPROPERTY(EditAnywhere)
+	int NumberOfSpawnersToDestroy = 1;
 
 	void ActorDied(AActor* DeadActor);
 
@@ -89,6 +110,12 @@ public:
 	void ShowHUDScreen();
 
 	UFUNCTION(Blueprintcallable)
+	void ShowGameOverScreen();
+
+	UFUNCTION(Blueprintcallable)
+	void ShowEndGameScreen();
+
+	UFUNCTION(Blueprintcallable)
 	void PlayGame();
 
 	UFUNCTION(Blueprintcallable)
@@ -105,6 +132,9 @@ public:
 	void AddToEnemies(AEnemyBase* Enemy);
 
 	bool IsGamePaused() const;
+
+	UFUNCTION(Blueprintcallable)
+	int GetNumberOfKilledEnemies() const { return NumberOfKilledEnemies; }
 
 protected:
 

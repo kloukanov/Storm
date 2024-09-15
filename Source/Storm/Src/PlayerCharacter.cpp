@@ -215,10 +215,12 @@ void APlayerCharacter::SwapGun(int Index) {
 }
 
 void APlayerCharacter::SwapToPrimaryGun() {
+	bPrimaryWeaponEquipped = true;
 	SwapGun(0);
 }
 
 void APlayerCharacter::SwapToSecondaryGun() {
+	bPrimaryWeaponEquipped = false;
 	SwapGun(1);
 }
 
@@ -256,6 +258,10 @@ void APlayerCharacter::ToggleGunActive(bool bIsActive) {
 void APlayerCharacter::HandleTakeDamage() {
 	//TODO: play damaged animation
 	UE_LOG(LogTemp, Warning, TEXT("this actor is taking damage: %s"), *this->GetActorNameOrLabel());
+}
+
+void APlayerCharacter::HandlePlayerDied() {
+	//TODO: play death anim
 }
 
 float APlayerCharacter::GetHealthPercent() const {

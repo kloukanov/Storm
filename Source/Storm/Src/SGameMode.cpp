@@ -2,6 +2,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Enemy/EnemyBase.h"
 #include "Spawner.h"
+#include "PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 void ASGameMode::BeginPlay() {
@@ -12,6 +13,8 @@ void ASGameMode::BeginPlay() {
     CreditsWidget = CreateWidget(GetWorld(), CreditsScreen);
     PauseWidget = CreateWidget(GetWorld(), PauseScreen);
     HUDWidget = CreateWidget(GetWorld(), HUDScreen);
+    GameOverWidget = CreateWidget(GetWorld(), GameOverScreen);
+    EndGameWidget = CreateWidget(GetWorld(), EndGameScreen);
 
     PlayerController = GetWorld()->GetFirstPlayerController();
 
@@ -26,12 +29,25 @@ void ASGameMode::ActorDied(AActor* DeadActor) {
     AEnemyBase* DeadEnemy = Cast<AEnemyBase>(DeadActor);
     if(DeadEnemy){
         DeadEnemy->ToggleIsDead(true);
+        NumberOfKilledEnemies++;
         return;
     }
 
     ASpawner* Spawner = Cast<ASpawner>(DeadActor);
     if(Spawner) {
         Spawner->HandleDestruction();
+        CurrentNumberOfDestroyedSpawners++;
+        // the win condition
+        if(CurrentNumberOfDestroyedSpawners >= NumberOfSpawnersToDestroy){
+            ShowEndGameScreen();
+        }
+        return;
+    }
+
+    APlayerCharacter* Player = Cast<APlayerCharacter>(DeadActor);
+    if(Player) {
+        Player->HandlePlayerDied();
+        ShowGameOverScreen();
         return;
     }
 }
@@ -70,56 +86,46 @@ void ASGameMode::ToggleGameplay(bool bIsGameplayMode) {
 void ASGameMode::ShowMainMenuScreen(){
     bGameStarted = false;
     ToggleGameplay(false);
-    if(MainMenuWidget){
-        if(CurrentWidget != nullptr){
-            CurrentWidget->RemoveFromParent();
-        }
-        CurrentWidget = MainMenuWidget;
-        CurrentWidget->AddToViewport();
-    }
+    SetCurrentWidgetToWidget(MainMenuWidget);
 }
 
 void ASGameMode::ShowSettingsScreen(){
     ToggleGameplay(false);
-    if(SettingsWidget){
-        if(CurrentWidget != nullptr){
-            CurrentWidget->RemoveFromParent();
-        }
-        CurrentWidget = SettingsWidget;
-        CurrentWidget->AddToViewport();
-    }
+    SetCurrentWidgetToWidget(SettingsWidget);
 }
 
 void ASGameMode::ShowCreditsScreen(){
     ToggleGameplay(false);
-    if(CreditsWidget){
-        if(CurrentWidget != nullptr){
-            CurrentWidget->RemoveFromParent();
-        }
-        CurrentWidget = CreditsWidget;
-        CurrentWidget->AddToViewport();
-    }
+    SetCurrentWidgetToWidget(CreditsWidget);
 }
 
 void ASGameMode::ShowPauseScreen(){
     ToggleGameplay(false);
-    if(PauseWidget){
-        if(CurrentWidget != nullptr){
-            CurrentWidget->RemoveFromParent();
-        }
-        CurrentWidget = PauseWidget;
-        CurrentWidget->AddToViewport();
-    }
+    SetCurrentWidgetToWidget(PauseWidget);
 }
 
 void ASGameMode::ShowHUDScreen(){
     bGameStarted = true;
     ToggleGameplay(true);
-    if(HUDWidget){
+    SetCurrentWidgetToWidget(HUDWidget);
+}
+
+void ASGameMode::ShowGameOverScreen(){
+    ToggleGameplay(false);
+    SetCurrentWidgetToWidget(GameOverWidget);
+}
+
+void ASGameMode::ShowEndGameScreen(){
+    ToggleGameplay(false);
+    SetCurrentWidgetToWidget(EndGameWidget);
+}
+
+void ASGameMode::SetCurrentWidgetToWidget(class UUserWidget* Widget) {
+    if(Widget){
         if(CurrentWidget != nullptr){
             CurrentWidget->RemoveFromParent();
         }
-        CurrentWidget = HUDWidget;
+        CurrentWidget = Widget;
         CurrentWidget->AddToViewport();
     }
 }
