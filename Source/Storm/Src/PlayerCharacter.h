@@ -42,6 +42,9 @@ class STORM_API APlayerCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SwapToSecondaryGunAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* PauseGameAction;
+
 	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* FireAnimation;
 
@@ -98,6 +101,8 @@ protected:
 	void SwapGun(int Index);
 
 	void ToggleGunActive(bool bIsActive);
+
+	void PauseGame();
 
 public:	
 

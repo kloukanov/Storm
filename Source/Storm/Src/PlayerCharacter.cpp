@@ -7,6 +7,7 @@
 #include "Guns/GunBase.h"
 #include "SPlayerController.h"
 #include "HealthComponent.h"
+#include "SGameMode.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -104,6 +105,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		
 		EnhancedInputComponent->BindAction(SwapToPrimaryGunAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SwapToPrimaryGun);
 		EnhancedInputComponent->BindAction(SwapToSecondaryGunAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SwapToSecondaryGun);
+
+		EnhancedInputComponent->BindAction(PauseGameAction, ETriggerEvent::Triggered, this, &APlayerCharacter::PauseGame);
 	}
 }
 
@@ -257,6 +260,17 @@ void APlayerCharacter::HandleTakeDamage() {
 
 float APlayerCharacter::GetHealthPercent() const {
 	return HealthComponent->GetHealthPercent();
+}
+
+void APlayerCharacter::PauseGame() {
+	ASGameMode *GM = GetWorld()->GetAuthGameMode<ASGameMode>();
+	if(GM){
+		if(GM->IsGamePaused()){
+			// GM->PlayGame();
+		}else {
+			GM->ShowPauseScreen();
+		}
+	}
 }
 
 FVector APlayerCharacter::GetWeaponSocket() const {
