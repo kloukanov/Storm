@@ -56,6 +56,12 @@ private:
 	UPROPERTY()
 	class UUserWidget* EndGameWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Screens", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UUserWidget> OpeningSceneScreen;
+
+	UPROPERTY()
+	class UUserWidget* OpeningSceneWidget;
+
 	UPROPERTY()
 	class UUserWidget* CurrentWidget;
 
@@ -70,7 +76,7 @@ private:
 	bool bGameStarted = false;
 
 	// ----------------------------------------------
-
+	UPROPERTY()
 	TArray<class AEnemyBase*> Enemies;
 
 	int NumberOfKilledEnemies = 0;
@@ -114,6 +120,9 @@ public:
 
 	UFUNCTION(Blueprintcallable)
 	void ShowEndGameScreen();
+
+	UFUNCTION(Blueprintcallable)
+	void ShowOpeningSceneScreen();
 
 	UFUNCTION(Blueprintcallable)
 	void PlayGame();

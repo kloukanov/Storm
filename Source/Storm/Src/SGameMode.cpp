@@ -15,6 +15,7 @@ void ASGameMode::BeginPlay() {
     HUDWidget = CreateWidget(GetWorld(), HUDScreen);
     GameOverWidget = CreateWidget(GetWorld(), GameOverScreen);
     EndGameWidget = CreateWidget(GetWorld(), EndGameScreen);
+    OpeningSceneWidget = CreateWidget(GetWorld(), OpeningSceneScreen);
 
     PlayerController = GetWorld()->GetFirstPlayerController();
 
@@ -118,6 +119,10 @@ void ASGameMode::ShowGameOverScreen(){
 void ASGameMode::ShowEndGameScreen(){
     ToggleGameplay(false);
     SetCurrentWidgetToWidget(EndGameWidget);
+}
+
+void ASGameMode::ShowOpeningSceneScreen() {
+    SetCurrentWidgetToWidget(OpeningSceneWidget);
 }
 
 void ASGameMode::SetCurrentWidgetToWidget(class UUserWidget* Widget) {
