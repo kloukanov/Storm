@@ -56,6 +56,7 @@ void ASpawner::SpawnEnemy() {
 			Enemy->SetActorLocation(GetActorLocation());
 			Enemy->SetActorRotation(GetActorRotation());
 			UE_LOG(LogTemp, Warning, TEXT("spawned a reused enemy!"));
+			return;
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("didn't spawn a reused enemy"));
@@ -64,7 +65,12 @@ void ASpawner::SpawnEnemy() {
 
 	if(EnemyClasses.Num() > 0){
 		int Index = FMath::RandRange(0, EnemyClasses.Num() - 1);
-        GameMode->AddToEnemies(GetWorld()->SpawnActor<AEnemyBase>(EnemyClasses[Index], GetActorLocation(), GetActorRotation()));
+		AEnemyBase* Enemy = GetWorld()->SpawnActor<AEnemyBase>(EnemyClasses[Index], GetActorLocation(), GetActorRotation());
+		if(Enemy != nullptr){
+        	GameMode->AddToEnemies(Enemy);
+		}else {
+			UE_LOG(LogTemp, Warning, TEXT("Spawner failed to spawn an enemy"));
+		}
 	}
 }
 
