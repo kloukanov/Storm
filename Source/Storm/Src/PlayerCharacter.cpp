@@ -111,7 +111,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 }
 
 void APlayerCharacter::Shoot() {
-	if(Gun && FireAnimation && !bIsFiring){
+	if(Gun && Gun->GetFireAnimation() && !bIsFiring){
 		bIsFiring = true;
 		Fire();
 		if(Gun->GetIsAutomatic()) {
@@ -128,9 +128,9 @@ void APlayerCharacter::StopShoot() {
 }
 
 void APlayerCharacter::Fire() {
-	if(AnimInstance && AnimInstance->GetCurrentActiveMontage() != ReloadAnimation){
+	if(AnimInstance && AnimInstance->GetCurrentActiveMontage() != Gun->GetReloadAnimation()){
 		if(Gun->PullTrigger()){
-			AnimInstance->Montage_Play(FireAnimation, 1.f);		
+			AnimInstance->Montage_Play(Gun->GetFireAnimation(), 1.f);		
 		}
 	}
 }
@@ -160,7 +160,7 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 void APlayerCharacter::StartADSAim() {
 	if(Gun){
 		// if we are not playing reload anim
-		if (AnimInstance && AnimInstance->GetCurrentActiveMontage() != ReloadAnimation) {
+		if (AnimInstance && AnimInstance->GetCurrentActiveMontage() != Gun->GetReloadAnimation()) {
 			ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
 			if(PlayerController){
 				PlayerController->SetViewTargetWithBlend(Gun, 0.15f);
@@ -179,7 +179,7 @@ void APlayerCharacter::StopADSAim() {
 }
 
 void APlayerCharacter::Reload() {
-	if(Gun && ReloadAnimation){
+	if(Gun && Gun->GetReloadAnimation()){
 		if (AnimInstance) {
 			// first change to FPS camera in case we are ADSing
 			ASPlayerController* PlayerController = Cast<ASPlayerController>(GetWorld()->GetFirstPlayerController());
@@ -188,7 +188,7 @@ void APlayerCharacter::Reload() {
 			}
 
 			if(Gun->TryReloadGun()){
-				AnimInstance->Montage_Play(ReloadAnimation, 1.f);
+				AnimInstance->Montage_Play(Gun->GetReloadAnimation(), 1.f);
 			}else {
 				// TODO: failed to reload, show some sort of indication 
 			}
@@ -204,7 +204,7 @@ void APlayerCharacter::SwapGun(int Index) {
 			if(AnimInstance){
 				StopShoot();
 				StopADSAim();
-				AnimInstance->Montage_Play(ReloadAnimation, 5.f);
+				AnimInstance->Montage_Play(Gun->GetReloadAnimation(), 5.f);
 				Gun = Guns[Index];
 				ToggleGunActive(true);
 			}

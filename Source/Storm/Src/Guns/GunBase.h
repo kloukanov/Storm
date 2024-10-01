@@ -40,12 +40,15 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Gun Properties", meta = (AllowPrivateAccess = "true"))
 	USoundBase* FireSound;
-	
-	UPROPERTY(EditAnywhere, Category = "Gun Properties", meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* FireAnimation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* ADSCameraComponent;
+
+	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* FireAnimation;
+
+	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ReloadAnimation;
 
 public:	
 	AGunBase();
@@ -65,6 +68,10 @@ public:
 	int GetCurrentBulletRounds() const { return CurrentBulletRounds; }
 
 	int GetMaxBulletRounds() const { return MaxBulletRounds; }
+
+	UAnimMontage* GetFireAnimation() const { return FireAnimation; }
+
+	UAnimMontage* GetReloadAnimation() const { return ReloadAnimation; }
 
 protected:
 	virtual void BeginPlay() override;

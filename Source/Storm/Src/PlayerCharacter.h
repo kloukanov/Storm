@@ -45,12 +45,6 @@ class STORM_API APlayerCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* PauseGameAction;
 
-	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* FireAnimation;
-
-	UPROPERTY(EditAnywhere, Category = Animation, meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* ReloadAnimation;
-
 	UPROPERTY(EditDefaultsOnly, Category = Gun)
 	TArray<TSubclassOf<class AGunBase>> GunClasses;
 
