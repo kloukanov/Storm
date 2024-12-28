@@ -4,6 +4,7 @@
 #include "Spawner.h"
 #include "PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "SGameInstance.h"
 
 void ASGameMode::BeginPlay() {
     Super::BeginPlay();
@@ -109,6 +110,13 @@ void ASGameMode::ShowHUDScreen(){
     bGameStarted = true;
     ToggleGameplay(true);
     SetCurrentWidgetToWidget(HUDWidget);
+
+    // TEMP CODE to test
+    USGameInstance* GameInstance = Cast<USGameInstance>(GetWorld()->GetGameInstance());
+    if(GameInstance) {
+        GameInstance->GenerateCave();
+    }
+
 }
 
 void ASGameMode::ShowGameOverScreen(){
